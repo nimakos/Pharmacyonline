@@ -1,0 +1,814 @@
+﻿
+@{
+    ViewBag.Title = "SearchResult";
+}
+
+
+<body>
+
+    <div class="col-md-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Please enter the details below.</h3>
+            </div>
+            <div class="panel-body">
+                <div class="form-group col-md-5">
+                    <label>Search by Client ID</label>
+                    <input type="text" id="idclient" class="form-control" placeholder="Enter Client Id" required="" />
+                </div>
+                <div class="form-group col-md-5">
+                    <label>Search by Client Name</label>
+                    <input type="text" id="nameclient" class="form-control" placeholder="Enter Client Name" required="" />
+                </div>
+                <div class="form-group col-md-5">
+                    <label>Search by Date Orders</label>
+                    <input type="text" id="dateOrders" class="form-control" placeholder="Enter Date Order" required="" />
+                </div>
+                <div class="form-group col-md-1">
+                    <div style="float: right; display: inline-block;">
+                        <label></label>
+                        <input class="btn btn-primary" name="submitButton" id="btnSubmit" value="Submit" type="button">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><hr />
+
+    <div class="col-md-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Clients</h3>
+            </div>
+            <table id="tblClient" class="table table-bordered table-striped table-responsive table-hover">
+                <thead>
+                    <tr id="client">
+                        <th class="client">Id</th>
+                        <th class="client">First Name</th>
+                        <th class="client">Last Name</th>
+                        <th class="client">Address</th>
+                        <th class="client">AFM</th>
+                        <th class="client">Telephone</th>
+                        <th class="client">Brand Name</th>
+                        <th class="client">DOY</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div><hr />
+
+        <div class="col-md-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Orders</h3>
+                </div>
+                <table id="tblOrders" class="table table-bordered table-striped table-responsive table-hover">
+                    <thead>
+                        <tr>
+                            <th class="order">Order Date</th>
+                            <th class="order">Medicine</th>
+                            <th class="order">Quantity</th>
+                            <th class="order">Vendor</th>
+                            <th class="order">Unit Price(€)</th>
+                            <th class="order">Order Price(€)</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div> <hr />
+
+
+        <div class="col-md-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">History</h3>
+                </div>
+                <table id="tblHistory" class="table table-bordered table-striped table-responsive table-hover">
+                    <thead>
+                        <tr>
+                            <th class="history">Record</th>
+                            <th class="history">Complaints</th>
+                            <th class="history">Absence</th>
+                            <th class="history">Communication Date</th>
+                            <th class="history">Vendor</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+
+
+
+@section Scripts{
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.js"></script>
+
+    <script type="text/javascript">
+
+        //εμφάνιση του πρώτου πίνακα των πελατων με το πάτημα του κουμπιού
+        $('#btnSubmit').click(function () {
+            $("#tblClient tbody tr").remove();
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Client")',
+                dataType: 'json',
+                data: { 'id': $('#idclient').val(), 'name': $('#nameclient').val() },
+                success: function (data) {
+
+                    $.each(data, function (i, client) {
+                        if (client.FirstName == null) {
+                            client.FirstName = " ";
+                        }
+                        if (client.LastName == null) {
+                            client.LastName = " ";
+                        }
+                        if (client.Address == null) {
+                            client.Address = " ";
+                        }
+                        if (client.AFM == null) {
+                            client.AFM = " ";
+                        }
+                        if (client.Telephone == null) {
+                            client.Telephone = " ";
+                        }
+                        if (client.Brand_Name == null) {
+                            client.Brand_Name = " ";
+                        }
+                        if (client.DOY == null) {
+                            client.DOY = " ";
+                        }
+                        var rows4 = "<tr>"
+                            + "<td class='clientID' id='clientID' >" + client.Id_Client + "</td>"
+                            + "<td class='clientFirstName'>" + client.FirstName + "</td>"
+                            + "<td class='clientLastName'>" + client.LastName + "</td>"
+                            + "<td class='clientAddress'>" + client.Address + "</td>"
+                            + "<td class='clientAFM'>" + client.AFM + "</td>"
+                            + "<td class='clientTelephone'>" + client.Telephone + "</td>"
+                            + "<td class='clientBrand_Name'>" + client.Brand_Name + "</td>"
+                            + "<td class='clientDOY'>" + client.DOY + "</td>"
+                            + "</tr>";
+                        $('#tblClient tbody').append(rows4);
+
+                    });
+                }
+            });
+        });
+
+        //εμφάνιση του δευτερου πίνακα των παραγγελιών με το πάτημα του κουμπιού
+        $('#btnSubmit').click(function () {
+            $("#tblOrders tbody tr").remove();
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("ClientOrders")',
+                dataType: 'json',
+                data: { 'id': $('#idclient').val(), 'name': $('#nameclient').val(), 'date': $("#dateOrders").val() },
+                success: function (data) {
+
+                    $.each(data, function (i, client) {
+
+                        if (client.Id == null) {
+                            client.Id = " ";
+                        }
+                        if (client.Date_order == null) {
+                            client.Date_order = " ";
+                        }
+                        if (client.Medicine == null) {
+                            client.Medicine = " ";
+                        }
+                        if (client.Quantity == null) {
+                            client.Quantity = " ";
+                        }
+                        if (client.Unit_Price == null) {
+                            client.Unit_Price = " ";
+                        }
+                        if (client.Order_Cost == null) {
+                            client.Order_Cost = " ";
+                        }
+
+                        var rows = "<tr id='id1'>"
+                            + "<td class='Ido' style='display:none'>" + "<span>" + client.Id + "</span>" + "<input type='text' value='" + client.Id + "' style='display:none'/>" + "</td>"
+                            + "<td class='OrderDate'>" + "<span>" + ToJavaScriptDate(client.Date_order) + "</span>" + "<input type='text' value='" + ToJavaScriptDate(client.Date_order) + "' style='display:none'/>" + "</td>"
+                            + "<td class='Medicine'>" + "<span>" + client.Medicine + "</span>" + "<input type='text' value='" + client.Medicine + "' style='display:none'/>" + "</td>"
+                            + "<td class='Quantity'>" + "<span>" + client.Quantity + "</span>" + "<input type='text' value='" + client.Quantity + "' style='display:none'/>" + "</td>"
+                            + "<td class='Vendoro'>" + "<span>" + client.Vendor_Name + "</span>" + "<input type='text' value='" + client.Vendor_Name + "' style='display:none'/>" + "</td>"
+                            + "<td class='UnitPrice'>" + "<span>" + client.Unit_Price + "</span>" + "<input type='text' value='" + client.Unit_Price + "' style='display:none'/>" + "</td>"
+                            + "<td class='OrderCost'>" + "<span>" + client.Order_Cost + "</span>" + "<input type='text' value='" + client.Order_Cost + "' style='display:none'/>" + "</td>"
+                            + "<td> <a class='Edit' href='javascript:;'>Edit</a>"
+                            + "<a class='Update' href='javascript:;' style='display: none'>Update</a>"
+                            + "<a class='Cancel' href='javascript:;' style='display: none'> | Cancel</a>"
+                            + "<a class='Deleteo' href='javascript:;'> | Delete</a>"
+                            + "<a class='Add' href='javascript:;' style='display: none'> | Add</a>"
+                            + "<a class='Insert' href='javascript:;' style='display: none'> | Insert</a></td>"
+                            + "</tr>";
+                        $('#tblOrders tbody').append(rows);
+
+                    });
+
+                    //εαν δεν εχει μεινει καμια γραμμη στον πίνακα πρεπει να φορτωσουμε εμεις μια
+                    if ($("#tblClient tr").length === 2 && $("#tblOrders tr").length  === 1)
+                    {
+                        var rows1 = "<tr id='id2'>"
+                            + "<td class='Ido' style='display:none'><span></span><input type='text' value='' style='display:none'/></td>"
+                            + "<td class='OrderDate'><span></span><input type='text' value='' style='display:none'/></td>"
+                            + "<td class='Medicine'><span></span><input type='text' value='' style='display:none'/></td>"
+                            + "<td class='Quantity'><span></span><input type='text' value='' style='display:none'/></td>"
+                            + "<td class='Vendoro'><span></span><input type='text' value='' style='display:none'/></td>"
+                            + "<td class='UnitPrice'><span></span><input type='text' value='' style='display:none'/></td>"
+                            + "<td class='OrderCost'><span></span><input type='text' value='' style='display:none'/></td>"
+                            + "<td> <a class='Edit' href='javascript:;'>Edit</a>"
+                            + "<a class='Update' href='javascript:;' style='display: none'>Update</a>"
+                            + "<a class='Cancel' href='javascript:;' style='display: none'> | Cancel</a>"
+                            + "<a class='Deleteo' href='javascript:;' style='display:none'> | Delete</a>"
+                            + "<a class='Add' href='javascript:;' style='display: none'> | Add</a>"
+                            + "<a class='Insert' href='javascript:;' style='display: none'> | Insert</a></td>"
+                            + "</tr>";
+                        $('#tblOrders tbody').append(rows1);
+                    }
+                    if ($(this).closest("tr").is(":last"))
+                    {
+                        $("#tblOrders tbody tr:last").find(".Add").show();
+                    }
+                },
+                error: (function (xhr) {
+                    if (xhr.status === 400) {
+                        var msg = JSON.parse(xhr.responseText);
+                        alert(msg);
+                    }
+                    else
+                    {
+                        alert("Έχεις δώσει λάθος στοιχεία");
+                        //alert(xhr.responseText);
+                    }
+                })
+            });
+        });
+
+        //εμφάνιση του τρίου πίνακα του ιστορικού με το πάτημα του κουμπιού
+        $('#btnSubmit').click(function () {
+            $("#tblHistory tbody tr").remove();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("ClientHistory")',
+                dataType: 'json',
+                data: { 'id': $('#idclient').val(), 'name': $('#nameclient').val() },
+                success: function (data) {
+                    //console.log(data);
+                    $.each(data, function (i, client) {
+
+                        if (client.Id == null ) {
+                            client.Id = " ";
+                        }
+                        if (client.Record == null) {
+                            client.Record = " ";
+                        }
+                        if (client.Complaints == null) {
+                            client.Complaints = " ";
+                        }
+                        if (client.Absence == null) {
+                            client.Absence = " ";
+                        }
+                        if (client.Date == null) {
+                            client.Date = " ";
+                        }
+                        if (client.Vendor_Name == null) {
+                            client.Vendor_Name = " ";
+                        }
+
+                        var rows2 = "<tr id='id3'>"
+                            + "<td class='Idh' style='display:none'>" + "<span>" + client.Id + "</span>" + "<input type='text' value='" + client.Id + "' style='display:none'/>" + "</td>"
+                            + "<td class='Record'>" + "<span>" + client.Record + "</span>" + "<input type='text' value='" + client.Record + "' style='display:none'/>" + "</td>"
+                            + "<td class='Complaints'>" + "<span>" + client.Complaints + "</span>" + "<input type='text' value='" + client.Complaints + "' style='display:none'/>" + "</td>"
+                            + "<td class='Absence'>" + "<span>" + client.Absence + "</span>" + "<input type='text' value='" + client.Absence + "' style='display:none'/>" + "</td>"
+                            + "<td class='CommunicationDate'>" + "<span>" + ToJavaScriptDate(client.Date) + "</span>" + "<input type='text' value='" + ToJavaScriptDate(client.Date) + "' style='display:none'/>" + "</td>"
+                            + "<td class='Vendorh'>" + "<span>" + client.Vendor_Name + "</span>" + "<input type='text' value='" + client.Vendor_Name + "' style='display:none'/>" + "</td>"
+                            + "<td> <a class='Edit' href='javascript:;'>Edit</a>"
+                            + "<a class='Update' href='javascript:;' style='display: none'>Update</a>"
+                            + "<a class='Cancel' href='javascript:;' style='display: none'> | Cancel</a>"
+                            + "<a class='Delete' href='javascript:;'> | Delete</a>"
+                            + "<a class='Add' href='javascript:;' style='display: none'> | Add</a>"
+                            + "<a class='Insert' href='javascript:;' style='display: none'> | Insert</a></td>"
+                            + "</tr>";
+                        $('#tblHistory tbody').append(rows2);
+                    });
+
+                    //εαν δεν εχει μεινει καμια γραμμη στον πίνακα πρεπει να φορτωσουμε εμεις μια
+                    if ($("#tblClient tr").length === 2 && $("#tblHistory tr").length === 1)
+                    {
+                        var rows3 = "<tr id='id4'>"
+                            + "<td class='Idh' style='display:none'><span></span><input type='text' value='' style='display:none'/></td>"
+                            + "<td class='Record'><span></span><input type='text' value='' style='display:none'/></td>"
+                            + "<td class='Complaints'><span></span><input type='text' value='' style='display:none'/></td>"
+                            + "<td class='Absence'><span></span><input type='text' value='' style='display:none'/></td>"
+                            + "<td class='CommunicationDate'><span></span><input type='text' value='' style='display:none'/></td>"
+                            + "<td class='Vendorh'><span></span><input type='text' value='' style='display:none'/></td>"
+                            + "<td> <a class='Edit' href='javascript:;'>Edit</a>"
+                            + "<a class='Update' href='javascript:;' style='display: none'>Update</a>"
+                            + "<a class='Cancel' href='javascript:;' style='display: none'> | Cancel</a>"
+                            + "<a class='Delete' href='javascript:;' style='display: none'> | Delete</a>"
+                            + "<a class='Add' href='javascript:;' style='display: none'> | Add</a>"
+                            + "<a class='Insert' href='javascript:;' style='display: none'> | Insert</a></td>"
+                            + "</tr>";
+                        $('#tblHistory tbody').append(rows3);
+
+                    }
+
+                    if ($(this).closest("tr").is(":last"))
+                    {
+                        $("#tblHistory tbody tr:last").find(".Add").show();
+                    }
+                }
+            });
+        });
+
+        //Edit Button for table History
+        $("body").on("click",
+            "#tblHistory .Edit",
+            function() {
+                var row = $(this).closest("tr");
+                $("td", row).each(function() {
+                    if ($(this).find("input").length > 0 && $(this) != null) {
+                        $(this).find("input").show();
+                        $(this).find("span").hide();
+                    }
+                });
+                if ($(this).closest("tr").find("span").is(':empty') ) {
+                    row.find(".Update").hide();
+                } else {
+                    row.find(".Update").show();
+                }
+
+                row.find(".Cancel").show();
+                row.find(".Delete").hide();
+                if ($(this).closest("tr").is(":last-child")) {
+                    row.find(".Insert").show();
+                }
+
+                row.find(".Add").hide();
+                $(this).hide();
+            });
+
+        //Edit Button for table Orders
+        $("body").on("click",
+            "#tblOrders .Edit",
+            function() {
+                var row = $(this).closest("tr");
+                $("td", row).each(function() {
+                    if ($(this).find("input").length > 0 && $(this) != null) {
+                        $(this).find("input").show();
+                        $(".OrderCost").find("input").hide();
+                        $(this).find("span").hide();
+                    }
+                });
+
+                if (row.find("span").is(':empty') ) {
+                    row.find(".Update").hide();
+                } else {
+                    row.find(".Update").show();
+                }
+                row.find(".Cancel").show();
+                row.find(".Deleteo").hide();
+                if ($(this).closest("tr").is(":last-child")) {
+                    row.find(".Insert").show();
+                }
+                row.find(".Add").hide();
+                $(this).hide();
+            });
+
+
+        //Cancel Button for table History.
+        $("body").on("click",
+            "#tblHistory .Cancel",
+            function() {
+                var row = $(this).closest("tr");
+                $("td", row).each(function() {
+                    if ($(this).find("input").length > 0) {
+                        var span = $(this).find("span");
+                        var input = $(this).find("input");
+                        input.val(span.html());
+                        span.show();
+                        input.hide();
+                    }
+                });
+                row.find(".Edit").show();
+                row.find(".Delete").show();
+                row.find(".Cancel").hide();
+                row.find(".Insert").hide();
+                row.find(".Update").hide();
+                if ($(this).closest("tr").is(":last-child")) {
+                    row.find(".Add").show();
+                }
+
+                $(this).hide();
+            });
+
+        //Cancel Button for table Orders.
+        $("body").on("click",
+            "#tblOrders .Cancel",
+            function() {
+                var row = $(this).closest("tr");
+                $("td", row).each(function() {
+                    if ($(this).find("input").length > 0) {
+                        var span = $(this).find("span");
+                        var input = $(this).find("input");
+                        input.val(span.html());
+                        span.show();
+                        input.hide();
+                    }
+                });
+                row.find(".Edit").show();
+                row.find(".Deleteo").show();
+                row.find(".Cancel").hide();
+                row.find(".Insert").hide();
+                row.find(".Update").hide();
+                if ($(this).closest("tr").is(":last-child")) {
+                    row.find(".Add").show();
+                }
+
+                $(this).hide();
+            });
+
+
+        //Add new Row(Visual) Orders
+        var regex = /^(.*)(\d)+$/i;
+        var cindex = 1;
+        $("body").on("click",
+            "#tblOrders .Add",
+            function () {
+
+                var tr = $(this).closest("tr"); //τραβάει την τρεχουσα γραμμη
+                var $clone = tr.clone(); //την κανει κλώνο
+
+                var newId = parseInt(tr.find(".Ido span").html());
+                newId++;
+                var newId2 = newId.toString();
+                $clone.find(" .Ido span").html(newId2);
+                $clone.find(" .OrderDate span").html('');
+                $clone.find(" .Medicine span").html('');
+                $clone.find(" .Quantity span").html('');
+                $clone.find(" .Vendor span").html('');
+                $clone.find(" .UnitPrice span").html('');
+                $clone.find(" .OrderCost span").html('');
+
+
+
+                //---------Αλλάζει την τιμη στο Id element του order-------------
+                cindex++;
+                $clone.find(':text').val('');
+                $clone.attr('ido', 'ido' + (cindex)); //update row id if required
+                $clone.find("*").each(function() { //update ids of elements in row
+                    var id = this.id || "";
+                    var match = id.match(regex) || [];
+                    if (match.length === 3) {
+                        this.id = match[1] + (cindex);
+                    }
+                });
+
+                $("#tblOrders tr:last").after($clone);
+
+            });
+
+        //Add new Row(Visual) History
+        $("body").on("click",
+            "#tblHistory .Add",
+            function () {
+
+                var tr = $(this).closest("tr"); //τραβάει την τρεχουσα γραμμη
+                var $clone = tr.clone(); //την κανει κλώνο
+
+
+                //---------Αλλάζει την τιμη στο Id column του History-------------
+                var newId = parseInt(tr.find(".Idh span").html());
+                newId++;
+                var newId2 = newId.toString();
+                $clone.find(" .Idh span").html(newId2);
+                $clone.find(" .Record span").html('');
+                $clone.find(" .Complaints span").html('');
+                $clone.find(" .Absence span").html('');
+                $clone.find(" .CommunicationDate span").html('');
+                $clone.find(" .Vendor span").html('');
+
+
+                //---------Αλλάζει την τιμη στο Id element του History-------------
+                cindex++;
+                $clone.find(':text').val('');
+                $clone.attr('idh', 'idh' + (cindex)); //update row id if required
+                $clone.find("*").each(function() { //update ids of elements in row
+                    var id = this.id || "";
+                    var match = id.match(regex) || [];
+                    if (match.length === 3) {
+                        this.id = match[1] + (cindex);
+                    }
+                });
+
+                $("#tblHistory tr:last").after($clone);
+
+            });
+
+            //Update Orders.
+            $("body").on("click",
+                "#tblOrders .Update",
+                function() {
+                    var row = $(this).closest("tr");
+                    $("td", row).each(function() {
+                        if ($(this).find("input").length > 0 && $(this) != null) {
+                            var span = $(this).find("span");
+                            var input = $(this).find("input");
+                            span.html(input.val());
+                            span.show();
+                            input.hide();
+                        }
+                    });
+                    row.find(".Edit").show();
+                    row.find(".Deleteo").show();
+                    row.find(".Cancel").hide();
+                    row.find(".Insert").hide();
+                    row.find(".Update").hide();
+                    if ($(this).closest("tr").is(":last-child")) {
+                        row.find(".Add").show();
+                    }
+                    $(this).hide();
+
+                    var orders = {};
+
+                    //υπολογισμος αυτοματα τιμη καθε παραγγελίας
+                    var quantity = parseFloat(row.find(".Quantity span").html());
+                    var unitPrice = parseFloat(row.find(".UnitPrice span").html());
+                    var orderCost = quantity * unitPrice;
+                    orderCost = precisionRound(orderCost, 2);//στρογγυλοποιηση
+
+                    orders.Id = row.find(".Ido span").html();
+                    orders.Date_order = row.find(".OrderDate span").html();
+                    orders.Medicine = row.find(".Medicine span").html();
+                    orders.Quantity = row.find(".Quantity span").html();
+                    orders.Vendor_Name = row.find(".Vendoro span").html();
+                    orders.Unit_Price = row.find(".UnitPrice span").html();
+                    row.find(".OrderCost span").html(orderCost);
+                    orders.Order_Cost = orderCost;
+
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("UpdateOrders")',
+                        data: '{update:' + JSON.stringify(orders) + '}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json"
+                    });
+                });
+
+            //Update History.
+            $("body").on("click",
+                "#tblHistory .Update",
+                function() {
+                    var row = $(this).closest("tr");
+                    $("td", row).each(function() {
+                        if ($(this).find("input").length > 0 && $(this) != null) {
+                            var span = $(this).find("span");
+                            var input = $(this).find("input");
+                            span.html(input.val());
+                            span.show();
+                            input.hide();
+                        }
+                    });
+                    row.find(".Edit").show();
+                    row.find(".Delete").show();
+                    row.find(".Cancel").hide();
+                    row.find(".Insert").hide();
+                    row.find(".Update").hide();
+                    if ($(this).closest("tr").is(":last-child")) {
+                        row.find(".Add").show();
+                    }
+                    $(this).hide();
+
+                    var history = {};
+                    history.Id = row.find(".Idh span").html();
+                    history.Record = row.find(".Record span").html();
+                    history.Complaints = row.find(".Complaints span").html();
+                    history.Absence = row.find(".Absence span").html();
+                    history.Date = row.find(".CommunicationDate span").html();
+                    history.Vendor_Name = row.find(".Vendorh span").html();
+
+
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("UpdateHistory")',
+                        data: '{update:' + JSON.stringify(history) + '}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json"
+                    });
+                });
+
+
+            //Insert New Order
+            $("body").on("click",
+                "#tblOrders .Insert",
+                function() {
+                    var row = $(this).closest("tr");
+                    $("td", row).each(function() {
+                        if ($(this).find("input").length > 0) {
+                            var span = $(this).find("span");
+                            var input = $(this).find("input");
+                            span.html(input.val());
+                            span.show();
+                            input.hide();
+                        }
+                    });
+                    row.find(".Edit").show();
+                    row.find(".Deleteo").show();
+                    row.find(".Cancel").hide();
+                    row.find(".Insert").hide();
+                    row.find(".Update").hide();
+                    if ($(this).closest("tr").is(":last-child")) {
+                        row.find(".Add").show();
+                    }
+                    $(this).hide();
+
+                    var order = {};
+
+                    //υπολογισμος αυτοματα τιμη καθε παραγγελίας
+                    var quantity = parseFloat(row.find(".Quantity span").html());
+                    var unitPrice = parseFloat(row.find(".UnitPrice span").html());
+                    var orderCost1 = quantity * unitPrice;
+                    orderCost1 = precisionRound(orderCost1, 2); //στρογγυλοποιηση
+
+                    order.Date_order = row.find(".OrderDate span").html();
+                    order.Medicine = row.find(".Medicine span").html();
+                    order.Quantity = row.find(".Quantity span").html();
+                    order.Vendor_Name = row.find(".Vendoro span").html();
+                    order.Unit_Price = row.find(".UnitPrice span").html();
+                    row.find(".OrderCost span").html(orderCost1);
+                    order.Order_Cost = orderCost1;
+
+                    var client = $(".clientID").html();
+
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("InsertOrder")',
+                        data: '{order:' + JSON.stringify(order) + ', clientId:'+ client +' }',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json"
+
+                    });
+                });
+
+            //Insert New History
+            $("body").on("click",
+                "#tblHistory .Insert",
+                function() {
+                    var row = $(this).closest("tr");
+                    $("td", row).each(function() {
+                        if ($(this).find("input").length > 0) {
+                            var span = $(this).find("span");
+                            var input = $(this).find("input");
+                            span.html(input.val());
+                            span.show();
+                            input.hide();
+                        }
+                    });
+                    row.find(".Edit").show();
+                    row.find(".Delete").show();
+                    row.find(".Cancel").hide();
+                    row.find(".Insert").hide();
+                    row.find(".Update").hide();
+                    if ($(this).closest("tr").is(":last-child")) {
+                        row.find(".Add").show();
+                    }
+                    $(this).hide();
+
+                    var history3 = {};
+
+                    history3.Record = row.find(".Record span").html();
+                    history3.Complaints = row.find(".Complaints span").html();
+                    history3.Absence = row.find(".Absence span").html();
+                    history3.Date = row.find(".CommunicationDate span").html();
+                    history3.Vendor_Name = row.find(".Vendorh span").html();
+
+                    var client1 = $(".clientID").html();
+
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("InsertHistory")',
+                        data: '{history:' + JSON.stringify(history3) + ', clientId:'+ client1 +' }',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json"
+
+                    });
+                });
+
+            //Delete History.
+            $("body").on("click",
+                " .Delete",
+                function() {
+                    if (confirm("Do you want to delete this row1?")) {
+                        var row = $(this).closest("tr");
+                        var historyId = row.find(".Idh span").html();
+                        $.ajax({
+                            type: "POST",
+                            url: '@Url.Action("DeleteHistory")',
+                            data: '{historyId: ' + historyId + '}',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function() {
+                                row.remove();
+
+                                if ($("#tblClient tr").length > 1 && $("#tblHistory tr").length < 2)
+                                { //εαν δεν εχει μεινει καμια γραμμη στον πίνακα πρεπει να φορτωσουμε εμεις μια
+                                    var rows3 = "<tr id='idh'>"
+                                        + "<td class='Idh' style='display:none'><span></span><input type='text' value='' style='display:none'/></td>"
+                                        + "<td class='Record'><span></span><input type='text' value='' style='display:none'/></td>"
+                                        + "<td class='Complaints'><span></span><input type='text' value='' style='display:none'/></td>"
+                                        + "<td class='Absence'><span></span><input type='text' value='' style='display:none'/></td>"
+                                        + "<td class='CommunicationDate'><span></span><input type='text' value='' style='display:none'/></td>"
+                                        + "<td class='Vendorh'><span></span><input type='text' value='' style='display:none'/></td>"
+                                        + "<td> <a class='Edit' href='javascript:;'>Edit</a>"
+                                        + "<a class='Update' href='javascript:;' style='display: none'>Update</a>"
+                                        + "<a class='Cancel' href='javascript:;' style='display: none'> | Cancel</a>"
+                                        + "<a class='Delete' href='javascript:;' style='display: none'> | Delete</a>"
+                                        + "<a class='Add' href='javascript:;' style='display: none'> | Add</a>"
+                                        + "<a class='Insert' href='javascript:;' style='display: none'> | Insert</a></td>"
+                                        + "</tr>";
+                                    $('#tblHistory tbody').append(rows3);
+                                }
+                                if ($(this).closest("tr").is(":last"))
+                                {
+                                    $("#tblHistory tbody tr:last").find(".Add").show();
+                                }
+                            }
+                        });
+                    }
+                });
+
+            //Delete Orders.
+            $("body").on("click",
+                " .Deleteo",
+                function() {
+                    if (confirm("Do you want to delete this row2?")) {
+                        var row = $(this).closest("tr");
+                        var orderId = row.find(".Ido span").html();
+                        $.ajax({
+                            type: "POST",
+                            url: '@Url.Action("DeleteOrders")',
+                            data: '{ordersId: ' + orderId + '}',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function() {
+                                row.remove();
+                                if ($("#tblClient tr").length > 1 && $(this).closest("tr").length  < 2)
+                                {
+                                    var rows1 = "<tr id='ido'>"
+                                        + "<td class='Ido' style='display:none'><span></span><input type='text' value='' style='display:none'/></td>"
+                                        + "<td class='OrderDate'><span></span><input type='text' value='' style='display:none'/></td>"
+                                        + "<td class='Medicine'><span></span><input type='text' value='' style='display:none'/></td>"
+                                        + "<td class='Quantity'><span></span><input type='text' value='' style='display:none'/></td>"
+                                        + "<td class='Vendoro'><span></span><input type='text' value='' style='display:none'/></td>"
+                                        + "<td class='UnitPrice'><span></span><input type='text' value='' style='display:none'/></td>"
+                                        + "<td class='OrderCost'><span></span><input type='text' value='' style='display:none'/></td>"
+                                        + "<td> <a class='Edit' href='javascript:;'>Edit</a>"
+                                        + "<a class='Update' href='javascript:;' style='display: none'>Update</a>"
+                                        + "<a class='Cancel' href='javascript:;' style='display: none'> | Cancel</a>"
+                                        + "<a class='Deleteo' href='javascript:;' style='display:none'> | Delete</a>"
+                                        + "<a class='Add' href='javascript:;' style='display: none'> | Add</a>"
+                                        + "<a class='Insert' href='javascript:;' style='display: none'> | Insert</a></td>"
+                                        + "</tr>";
+                                    $('#tblOrders tbody').append(rows1);
+                                }
+                                if ($(this).closest("tr").is(":last"))
+                                {
+                                    $("#tblOrders tbody tr:last").find(".Add").show();
+                                }
+                            }
+                        });
+                    }
+                });
+
+
+        //Fix the date problem view
+            function ToJavaScriptDate(value) {
+                //εαν το value δωθηκε ειναι τυπου date
+                if (/Date\(([^)]+)\)/.test(value)) {
+                    var pattern = /Date\(([^)]+)\)/;
+                    var results = pattern.exec(value);
+                    var dt = new Date(parseFloat(results[1]));
+                    return dt.getDate() + "/" + (dt.getMonth() + 1) + "/" + dt.getFullYear();
+                } else return value; //εαν το value που δωθηκε ειναι κενο ή κάτι άλλο
+            }
+
+        //στρογγυλοποίηση
+        function precisionRound(number, precision) {
+            var factor = Math.pow(10, precision);
+            return Math.round(number * factor) / factor;
+        }
+
+
+    </script>
+}
+
+
+
+
+
+
+
+
+

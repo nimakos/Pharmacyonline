@@ -1,0 +1,340 @@
+﻿@model IEnumerable<Pharmacy.Models.Client>
+
+<html>
+
+<head>
+    <title>Clients</title>
+</head>
+<body>
+    
+    <table class="table table-bordered table-striped table-responsive table-hover" id="tblClients">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id_Client)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AFM)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Telephone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Brand_Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DOY)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tbody></tbody> <!--το χρειαζόμαστε για να περάσουμε τα πρώτα δεδομένα (βλ. σειρά 113)-->
+            <tr id="id1">
+                <td class="Id">
+                    <span> @Html.DisplayFor(modelItem => item.Id_Client)</span>
+                </td>
+
+                <td class="FirstName">
+                    <span> @Html.DisplayFor(modelItem => item.FirstName)</span>
+                    <input type="text" value="@item.FirstName" style="display:none" />
+                </td>
+                <td class="LastName">
+                    <span>@Html.DisplayFor(modelItem => item.LastName)</span>
+                    <input type="text" value="@item.LastName" style="display:none" />
+                </td>
+                <td class="Address">
+                    <span>@Html.DisplayFor(modelItem => item.Address)</span>
+                    <input type="text" value="@item.Address" style="display:none" />
+                </td>
+                <td class="AFM">
+                    <span>@Html.DisplayFor(modelItem => item.AFM)</span>
+                    <input type="text" value="@item.AFM" style="display:none" />
+                </td>
+                <td class="Telephone">
+                    <span>@Html.DisplayFor(modelItem => item.Telephone)</span>
+                    <input type="text" value="@item.Telephone" style="display:none" />
+                </td>
+                <td class="BrandName">
+                    <span>@Html.DisplayFor(modelItem => item.Brand_Name)</span>
+                    <input type="text" value="@item.Brand_Name" style="display:none" />
+                </td>
+                <td class="DOY">
+                    <span>@Html.DisplayFor(modelItem => item.DOY)</span>
+                    <input type="text" value="@item.DOY" style="display:none" />
+                </td>
+                <td>
+                    <a class="Edit" href="javascript:;">Edit</a>
+                    <a class="Update" href="javascript:;" style="display: none">Update</a>
+                    <a class="Cancel" href="javascript:;" style="display: none"> | Cancel</a>
+                    <a class="Delete" href="javascript:;"> | Delete</a>
+                    <a class="Add" href="javascript:;" style="display: none"> | Add</a>
+                    <a class="Insert" href="javascript:;" style="display: none"> | Insert</a>
+                </td>
+            </tr>
+        }
+
+    </table>
+
+
+</body>
+</html>
+
+@section Scripts{
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+            $("tr:last").find(".Add").show();
+            if ($("#tblClients tr").length === 1) { //εαν δεν εχει μεινει καμια γραμμη στον πίνακα πρεπει να φορτωσουμε εμεις μια
+                var rows = ' <tr id="id1"> <td class="Id"><span></span></td>' +
+                    '<td class="FirstName"><span></span><input type="text" value="" style="display:none" /></td>' +
+                    '<td class="LastName"><span></span><input type="text" value="" style="display:none" /></td>' +
+                    '<td class="Address"><span></span><input type="text" value="" style="display:none" /></td>' +
+                    '<td class="AFM"><span></span><input type="text" value="" style="display:none" /></td>' +
+                    '<td class="Telephone"><span></span><input type="text" value="" style="display:none" /></td>' +
+                    '<td class="BrandName"><span></span><input type="text" value="" style="display:none" /></td>' +
+                    '<td class="DOY"><span></span><input type="text" value="" style="display:none" /></td>' +
+                    '<td><a class="Edit" href="javascript:;">Edit</a>' +
+                    '<a class="Update" href="javascript:;" style="display: none">Update</a>' +
+                    '<a class="Cancel" href="javascript:;" style="display: none"> | Cancel</a>' +
+                    '<a class="Delete" href="javascript:;"> | Delete</a>' +
+                    '<a class="Add" href="javascript:;" style="display: none"> | Add</a>' +
+                    '<a class="Insert" href="javascript:;" style="display: none"> | Insert</a>' +
+                    '</td></tr>';
+                $("#tblClients tbody").append(rows);
+
+                $.ajax({//θελω καθε φορα να παίρνω το Id της τελευταιας εγγραφης των Clients
+                    type: "POST",
+                    url: '@Url.Action("FindId")',
+                    contentType: "application/json; charset=utf-8",
+                    success: function(data) {
+                            $(".Id span").html(data); //παίρνω τη ματαβλητη data από την μέθοδο FindId και το εμφανιζω στο span με κλάση Id
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        $('#lblCommentsNotification').text("Error encountered while saving.");
+                    }
+                });
+            }
+
+        });
+
+
+        //Edit Client
+        $("body").on("click",
+            "#tblClients .Edit",
+            function() {
+                var row = $(this).closest("tr");
+                $("td", row).each(function() {
+                    if ($(this).find("input").length > 0 && $(this) != null) {
+                        $(this).find("input").show();
+                        $(this).find("span").hide();
+                    }
+                });
+                if (row.find("span").is(':empty') ) {
+                    row.find(".Update").hide();
+                } else {
+                    row.find(".Update").show();
+                }
+                row.find(".Cancel").show();
+                row.find(".Delete").hide();
+                if ($(this).closest("tr").is(":last-child")) {
+                    row.find(".Insert").show();
+                }
+                row.find(".Add").hide();
+                $(this).hide();
+            });
+
+        //Update Client.
+        $("body").on("click",
+            "#tblClients .Update",
+            function() {
+                var row = $(this).closest("tr");
+                $("td", row).each(function() {
+                    if ($(this).find("input").length > 0 && $(this) != null) {
+                        var span = $(this).find("span");
+                        var input = $(this).find("input");
+                        span.html(input.val());
+                        span.show();
+                        input.hide();
+                    }
+                });
+                row.find(".Edit").show();
+                row.find(".Delete").show();
+                row.find(".Cancel").hide();
+                row.find(".Insert").hide();
+                row.find(".Update").hide();
+                if ($(this).closest("tr").is(":last-child")) {
+                    row.find(".Add").show();
+                }
+                $(this).hide();
+
+                var client = {};
+                client.Id_Client = row.find(".Id span").html();
+                client.FirstName = row.find(".FirstName span").html();
+                client.LastName = row.find(".LastName span").html();
+                client.Address = row.find(".Address span").html();
+                client.AFM = row.find(".AFM span").html();
+                client.Telephone = row.find(".Telephone span").html();
+                client.Brand_Name = row.find(".BrandName span").html();
+                client.DOY = row.find(".DOY span").html();
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("UpdateClient")',
+                    data: '{client:' + JSON.stringify(client) + '}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json"
+                });
+            });
+
+        //Cancel Client.
+        $("body").on("click",
+            "#tblClients .Cancel",
+            function() {
+                var row = $(this).closest("tr");
+                $("td", row).each(function() {
+                    if ($(this).find("input").length > 0) {
+                        var span = $(this).find("span");
+                        var input = $(this).find("input");
+                        input.val(span.html());
+                        span.show();
+                        input.hide();
+                    }
+                });
+                row.find(".Edit").show();
+                row.find(".Delete").show();
+                row.find(".Cancel").hide();
+                row.find(".Insert").hide();
+                row.find(".Update").hide();
+                if ($(this).closest("tr").is(":last-child")) {
+                    row.find(".Add").show();
+                }
+
+                $(this).hide();
+            });
+
+        //Delete Client.
+        $("body").on("click",
+            "#tblClients .Delete",
+            function() {
+                if (confirm("Do you want to delete this row?")) {
+                    var row = $(this).closest("tr");
+                    var clientId = row.find(".Id span").html();
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("DeleteClient")',
+                        data: '{clientId: ' + clientId + '}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function() {
+                            row.remove();
+                            if ($(this).closest("tr").is(":last"))
+                            {
+                                $("#tblClients tbody tr:last").find(".Add").show();
+                            }
+                        }
+                    });
+                }
+            });
+
+
+        //Add new Row(Visual)
+        var regex = /^(.*)(\d)+$/i;
+        var cindex = 1;
+        $("body").on("click",
+            "#tblClients .Add",
+            function () {
+
+                var tr = $(this).closest("tr"); //τραβάει την τρεχουσα γραμμη
+                var $clone = tr.clone(); //την κανει κλώνο
+
+
+                //---------Αλλάζει την τιμη στο Id column του client-------------
+                var newId = parseInt(tr.find(".Id span").html());
+                newId++;
+                var newId2 = newId.toString();
+                $clone.find(" .Id span").html(newId2);
+                $clone.find(" .FirstName span").html('');
+                $clone.find(" .LastName span").html('');
+                $clone.find(" .Address span").html('');
+                $clone.find(" .AFM span").html('');
+                $clone.find(" .Telephone span").html('');
+                $clone.find(" .BrandName span").html('');
+                $clone.find(" .DOY span").html('');
+
+
+
+                //---------Αλλάζει την τιμη στο Id element του client-------------
+                cindex++;
+                $clone.find(':text').val('');
+                $clone.attr('id', 'id' + (cindex)); //update row id if required
+                $clone.find("*").each(function() { //update ids of elements in row
+                    var id = this.id || "";
+                    var match = id.match(regex) || [];
+                    if (match.length === 3) {
+                        this.id = match[1] + (cindex);
+                    }
+                });
+
+                $("#tblClients tr:last").after($clone);
+
+            });
+
+
+        //Insert New Client
+        $("body").on("click",
+            "#tblClients .Insert",
+            function() {
+                var row = $(this).closest("tr");
+                $("td", row).each(function() {
+                    if ($(this).find("input").length > 0) {
+                        var span = $(this).find("span");
+                        var input = $(this).find("input");
+                        span.html(input.val());
+                        span.show();
+                        input.hide();
+                    }
+                });
+                row.find(".Edit").show();
+                row.find(".Delete").show();
+                row.find(".Cancel").hide();
+                row.find(".Insert").hide();
+                row.find(".Update").hide();
+                if ($(this).closest("tr").is(":last-child")) {
+                    row.find(".Add").show();
+                }
+                $(this).hide();
+
+                var client = {};
+
+                client.FirstName = row.find(".FirstName span").html();
+                client.LastName = row.find(".LastName span").html();
+                client.Address = row.find(".Address span").html();
+                client.AFM = row.find(".AFM span").html();
+                client.Telephone = row.find(".Telephone span").html();
+                client.Brand_Name = row.find(".BrandName span").html();
+                client.DOY = row.find(".DOY span").html();
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("InsertClient")',
+                    data: '{client:' + JSON.stringify(client) + '}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json"
+
+                });
+            });
+
+    </script>
+
+}
