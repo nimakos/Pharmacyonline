@@ -8,4 +8,4 @@
 
 # Web application
 
-An Online ERP for Sales 
+An Online ERP for Pharmacy Companies.  
