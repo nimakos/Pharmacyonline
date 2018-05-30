@@ -1,11 +1,11 @@
-# # Pharmacyonline
+# Pharmacyonline
 
 # IDE: Visual studio 2017 enterprise
 
 # Language : C#
 
-# Framework : .net
+# Framework : ASP.net MVC, ENTITY, AJAX
 
-# Window application
+# Web application
 
-An Online ERP for 
+An Online ERP for Sales 
