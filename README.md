@@ -4,7 +4,7 @@
 
 # Language : C#
 
-# Framework : ASP.net MVC, ENTITY, AJAX
+# Frameworks : ASP.net MVC, ENTITY, AJAX
 
 # Web application
 
