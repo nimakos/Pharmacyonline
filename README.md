@@ -1,12 +1,7 @@
-# Pharmacyonline
-
-# IDE: Visual studio 2017 enterprise
-
-# Language : C#
-
-# Frameworks : ASP.net MVC, ENTITY, AJAX
-
-# Web application
+# Maze
+# IDE: Netbeans
+# Language : JAVA
+# Console application
 
 The program solves and visualizes the problem of robot motion planning(robot motion planning) implementing a variation of algorithms DFS, BFS and A *as well as the algorithm of greedy search, as a special case of A *.
  
