@@ -1,8 +1,6 @@
 # Pharmacyonline
-# IDE: Visual studio 2017 enterprise
-# Language : C#
-# Frameworks : ASP.net MVC, ENTITY, AJAX
-# Web application
+# IDE: Codeblocks
+# Language : C
+# Console application
 
-An online Sale manager application for pharmaceutical companies
-Each SalesMan has its own clients with order details and history details
+First Calculates the sum of each row, Second calculates the minimun average of each column 
