@@ -1,6 +1,6 @@
 # Pharmacyonline
 # IDE: Microsoft Visual studio 2017
-# Language : C#, .NET
+# Language : C#
 # Frameworks : ASP.net MVC, ENTITY, AJAX
 # Web application
 
