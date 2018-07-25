@@ -1,6 +1,8 @@
 # Pharmacyonline
-# IDE: Codeblocks
-# Language : C
-# Console application
+# IDE: CodeBlocs
+# Language : C#
+# Frameworks : ASP.net MVC, ENTITY, AJAX
+# Web application
 
-First Calculates the sum of each row, Second calculates the minimun average of each column 
+An online Sales Manager application which helps salesman store his clients his orders for each client 
+and save many other usefull data
