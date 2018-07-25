@@ -1,6 +1,6 @@
 # Pharmacyonline
-# IDE: CodeBlocs
-# Language : C#
+# IDE: Microsoft Visual studio 2017
+# Language : C#, .NET
 # Frameworks : ASP.net MVC, ENTITY, AJAX
 # Web application
 
